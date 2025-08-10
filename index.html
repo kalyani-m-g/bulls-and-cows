@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Bulls and Cows</title>
+  <style>
+    body { font-family: sans-serif; max-width: 400px; margin: auto; padding: 20px; }
+    input, button { padding: 8px; margin-top: 10px; width: 100%; }
+    #log { margin-top: 20px; white-space: pre-wrap; font-family: monospace; }
+  </style>
+</head>
+<body>
+  <h1>Bulls and Cows</h1>
+  <input id="guess"> 
+  <button id="btn">Guess</button>
+  <div id="log"></div>
+
+  <script>
+    const secret = (() => {
+      const digits = "123456789".split("");
+      let s = "";
+      for (let i = 0; i < 4; i++) s += digits.splice(Math.floor(Math.random()*digits.length),1)[0];
+      return s;
+    })();
+
+    document.getElementById('btn').onclick = () => {
+      const g = document.getElementById('guess').value;
+      if (!/^[1-9]{4}$/.test(g) || new Set(g).size !== 4) {
+        log.textContent += `Invalid: ${g}\n`;
+        return;
+      }
+      let bulls = 0, cows = 0;
+      for (let i = 0; i < 4; i++) {
+        if (g[i] === secret[i]) bulls++;
+        else if (secret.includes(g[i])) cows++;
+      }
+      log.textContent += `${g} → ${bulls} Bulls, ${cows} Cows\n`;
+      if (bulls === 4) log.textContent += `You win! Secret: ${secret}\n`;
+      document.getElementById('guess').value = '';
+    };
+  </script>
+</body>
+</html>
+
