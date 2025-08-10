@@ -4,6 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Bulls and Cows</title>
+  <style><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Bulls and Cows</title>
   <style>
     body { font-family: sans-serif; max-width: 400px; margin: auto; padding: 20px; }
     input, button { padding: 8px; margin-top: 10px; width: 100%; }
@@ -12,7 +18,7 @@
 </head>
 <body>
   <h1>Bulls and Cows</h1>
-  <input id="guess"> 
+  <input id="guess" autocomplete="off" /> 
   <button id="btn">Guess</button>
   <div id="log"></div>
 
@@ -24,22 +30,49 @@
       return s;
     })();
 
-    document.getElementById('btn').onclick = () => {
-      const g = document.getElementById('guess').value;
+    const maxTries = 5;
+    let tries = 0;
+    const log = document.getElementById('log');
+    const btn = document.getElementById('btn');
+    const guessInput = document.getElementById('guess');
+
+    btn.onclick = () => {
+      if (tries >= maxTries) return;
+
+      const g = guessInput.value.trim();
       if (!/^[1-9]{4}$/.test(g) || new Set(g).size !== 4) {
-        log.textContent += `Invalid: ${g}\n`;
+        log.textContent += `Invalid guess: ${g}\n`;
+        guessInput.value = '';
         return;
       }
+
+      tries++;
+
       let bulls = 0, cows = 0;
       for (let i = 0; i < 4; i++) {
         if (g[i] === secret[i]) bulls++;
         else if (secret.includes(g[i])) cows++;
       }
-      log.textContent += `${g} → ${bulls} Bulls, ${cows} Cows\n`;
-      if (bulls === 4) log.textContent += `You win! Secret: ${secret}\n`;
-      document.getElementById('guess').value = '';
+
+      log.textContent += `Try ${tries}: ${g} → ${bulls} Bulls, ${cows} Cows\n`;
+
+      if (bulls === 4) {
+        log.textContent += `🎉 You win! Secret: ${secret} (in ${tries} tries)\n`;
+        btn.disabled = true;
+        guessInput.disabled = true;
+        return;
+      }
+
+      if (tries === maxTries) {
+        log.textContent += `Game over! You've used all your tries.\n`;
+        log.textContent += `The secret was: ${secret}\n`;
+        btn.disabled = true;
+        guessInput.disabled = true;
+      }
+
+      guessInput.value = '';
+      guessInput.focus();
     };
   </script>
 </body>
 </html>
-
